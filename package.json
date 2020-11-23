@@ -1,0 +1,17 @@
+{
+  "name": "merkleproof-tsc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node verifyMerkleProof.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bsv": "^1.5.4",
+    "buffer-swap-endianness": "^1.0.0"
+  }
+}
