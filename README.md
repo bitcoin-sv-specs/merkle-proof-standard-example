@@ -36,3 +36,7 @@ $ npm install
 ```sh
 $ npm start
 ```
+
+## Code Style
+
+The JavaScript code in this repository is written using [JavaScript Standard Style](https://standardjs.com/).
