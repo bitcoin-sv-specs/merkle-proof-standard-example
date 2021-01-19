@@ -27,26 +27,26 @@ const mapHashToHeader = {
 function VerifyMerkleProof (merkleProof) {
   // flags:
 
-  // Transaction or TxId (bit 0):
   let txid
-  if (merkleProof.flags & 1) { // bit 0 is set
+  if (merkleProof.txOrIdType === 'tx') {
     // The `txOrId` field contains a full transaction
     const tx = new bsv.Transaction(merkleProof.txOrId)
     txid = tx.id
-  } else { // bit 0 is NOT set
+  } else if (merkleProof.txOrIdType === 'id') {
     // The `txOrId` field contains a transaction ID
     txid = merkleProof.txOrId
+  } else {
+    throw new Error('invalid txOrIdType')
   }
 
-  // Target type (bits 1 and 2):
   let merkleRoot
-  if (merkleProof.flags & 2) { // bit 1 set
+  if (merkleProof.targetType === 'blockHeader') {
     // The `target` field contains a block header
     merkleRoot = merkleProof.target.merkleroot
-  } else if (merkleProof.flags & 4) { // bit 2 set
+  } else if (merkleProof.targetType === 'merkleRoot') {
     // the `target` field contains a merkle root
     merkleRoot = merkleProof.target
-  } else { // bits 1 & 2 NOT set
+  } else if (merkleProof.targetType === 'blockHash') {
     // The `target` field contains a block hash
 
     // You will need to get the block header corresponding
@@ -55,9 +55,17 @@ function VerifyMerkleProof (merkleProof) {
     // store of an SPV client or from a third party
     // provider like WhatsOnChain
     merkleRoot = mapHashToHeader[merkleProof.target].merkleroot
+  } else {
+    throw new Error('invalid targetType')
   }
 
-  // flags bits 3 (Proof type) and 4 (Composite proof) not supported in this version
+  if (merkleProof.proofType !== 'merkleBranch') {
+    throw new Error('only merkleBranch supported in this version') // merkleTree proof type not supported
+  }
+
+  if (merkleProof.compositeProofType !== 'single') {
+    throw new Error('only single proof supported in this version') // composite proof type not supported
+  }
 
   if (!txid) {
     throw new Error('txid missing')

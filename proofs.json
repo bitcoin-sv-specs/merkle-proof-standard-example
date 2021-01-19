@@ -1,6 +1,10 @@
 [
   {
     "flags": 0,
+    "txOrIdType": "id",
+    "targetType": "blockHash",
+    "proofType": "merkleBranch",
+    "compositeProofType": "single",
     "index": 13,
     "txOrId": "2c4c5071eb12d80625055d56ace2481106af982b26b4072f84f1d3f0ef5d06a8",
     "target": "76f26e3dcecb7aafcc2b32d0b910eb7b365dc74ee3d8714541e1e2fb6c0ce669",
@@ -13,6 +17,10 @@
   },
   {
     "flags": 1,
+    "txOrIdType": "tx",
+    "targetType": "blockHash",
+    "proofType": "merkleBranch",
+    "compositeProofType": "single",
     "index": 13,
     "txOrId": "0200000001242dbd15bf111a8ae499fa33a4c330d1926ed042a9dc2383ceebf694314af58e000000006a4730440220607d549a42db5ec36b9f71b1f7e673f7d075d1196448800a767e0303e073e4110220450ad8ade390f79efbbc4d3a4f2a9af114eab23cd886b2f0abb61d475549fc9d412102715b580e5580e1a59867511ab6a907219243fd4836a0013c755a247236408a59feffffff02a0860100000000001976a9144bfcce11ef9673ab34a6dc90ef5346fa3ff5f31c88ac0ac550fa000000001976a9145cb6b853fde72be0de9bfda48d959f4d1910c1e888ac67000000",
     "target": "76f26e3dcecb7aafcc2b32d0b910eb7b365dc74ee3d8714541e1e2fb6c0ce669",
@@ -25,6 +33,10 @@
   },
   {
     "flags": 2,
+    "txOrIdType": "id",
+    "targetType": "blockHeader",
+    "proofType": "merkleBranch",
+    "compositeProofType": "single",
     "index": 13,
     "txOrId": "2c4c5071eb12d80625055d56ace2481106af982b26b4072f84f1d3f0ef5d06a8",
     "target": {
@@ -52,6 +64,10 @@
   },
   {
     "flags": 3,
+    "txOrIdType": "tx",
+    "targetType": "blockHeader",
+    "proofType": "merkleBranch",
+    "compositeProofType": "single",
     "index": 13,
     "txOrId": "0200000001242dbd15bf111a8ae499fa33a4c330d1926ed042a9dc2383ceebf694314af58e000000006a4730440220607d549a42db5ec36b9f71b1f7e673f7d075d1196448800a767e0303e073e4110220450ad8ade390f79efbbc4d3a4f2a9af114eab23cd886b2f0abb61d475549fc9d412102715b580e5580e1a59867511ab6a907219243fd4836a0013c755a247236408a59feffffff02a0860100000000001976a9144bfcce11ef9673ab34a6dc90ef5346fa3ff5f31c88ac0ac550fa000000001976a9145cb6b853fde72be0de9bfda48d959f4d1910c1e888ac67000000",
     "target": {
@@ -79,6 +95,10 @@
   },
   {
     "flags": 4,
+    "txOrIdType": "id",
+    "targetType": "merkleRoot",
+    "proofType": "merkleBranch",
+    "compositeProofType": "single",
     "index": 13,
     "txOrId": "2c4c5071eb12d80625055d56ace2481106af982b26b4072f84f1d3f0ef5d06a8",
     "target": "9d4e9c273350424f50e961f9fdf8f5d3120bb3528b3f9c6678a42b22df479923",
