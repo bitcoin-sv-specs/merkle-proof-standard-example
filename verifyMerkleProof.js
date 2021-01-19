@@ -28,35 +28,42 @@ function VerifyMerkleProof (merkleProof) {
   // flags:
 
   let txid
-  if (merkleProof.txOrIdType === 'tx') {
+  if (merkleProof.txOrId.length === 64) {
+    // The `txOrId` field contains a transaction ID
+    txid = merkleProof.txOrId
+  } else if (merkleProof.txOrId.length > 64) {
     // The `txOrId` field contains a full transaction
     const tx = new bsv.Transaction(merkleProof.txOrId)
     txid = tx.id
-  } else if (merkleProof.txOrIdType === 'id') {
-    // The `txOrId` field contains a transaction ID
-    txid = merkleProof.txOrId
   } else {
-    throw new Error('invalid txOrIdType')
+    throw new Error('invalid txOrId length - must be at least 64 chars (32 bytes)')
   }
 
   let merkleRoot
-  if (merkleProof.targetType === 'blockHeader') {
+  if (typeof merkleProof.target === 'object') {
     // The `target` field contains a block header
     merkleRoot = merkleProof.target.merkleroot
-  } else if (merkleProof.targetType === 'merkleRoot') {
-    // the `target` field contains a merkle root
-    merkleRoot = merkleProof.target
-  } else if (merkleProof.targetType === 'blockHash') {
-    // The `target` field contains a block hash
+  } else if (typeof merkleProof.target === 'string') {
+    if (!merkleProof.targetType || merkleProof.targetType === 'blockHash') {
+      // The `target` field contains a block hash
 
-    // You will need to get the block header corresponding
-    // to this block hash in order to get the merkle root
-    // from it. You can get this from from the headers
-    // store of an SPV client or from a third party
-    // provider like WhatsOnChain
-    merkleRoot = mapHashToHeader[merkleProof.target].merkleroot
+      // You will need to get the block header corresponding
+      // to this block hash in order to get the merkle root
+      // from it. You can get this from from the headers
+      // store of an SPV client or from a third party
+      // provider like WhatsOnChain
+      merkleRoot = mapHashToHeader[merkleProof.target].merkleroot
+    } else if (merkleProof.targetType === 'blockHeader') {
+      // The `target` field contains a block header
+      merkleRoot = merkleProof.target.merkleroot
+    } else if (merkleProof.targetType === 'merkleRoot') {
+      // the `target` field contains a merkle root
+      merkleRoot = merkleProof.target
+    } else {
+      throw new Error('invalid targetType')
+    }
   } else {
-    throw new Error('invalid targetType')
+    throw new Error('invalid target field')
   }
 
   if (merkleProof.proofType !== 'merkleBranch') {
