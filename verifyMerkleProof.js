@@ -25,49 +25,44 @@ const mapHashToHeader = {
 }
 
 function VerifyMerkleProof (merkleProof) {
-  // flags:
-
-  // Transaction or TxId (bit 0):
   let txid
-  if (merkleProof.flags & 1) { // bit 0 is set
-    // The `txOrId` field contains a full transaction
-    const tx = new bsv.Transaction(merkleProof.txOrId)
+  if (merkleProof.txId) {
+    txid = merkleProof.txId
+  } else if (merkleProof.txHex) {
+    const tx = new bsv.Transaction(merkleProof.txHex)
     txid = tx.id
-  } else { // bit 0 is NOT set
-    // The `txOrId` field contains a transaction ID
-    txid = merkleProof.txOrId
+  } else {
+    throw new Error('txId or tx fields missing')
   }
 
-  // Target type (bits 1 and 2):
   let merkleRoot
-  if (merkleProof.flags & 2) { // bit 1 set
-    // The `target` field contains a block header
-    merkleRoot = merkleProof.target.merkleroot
-  } else if (merkleProof.flags & 4) { // bit 2 set
-    // the `target` field contains a merkle root
-    merkleRoot = merkleProof.target
-  } else { // bits 1 & 2 NOT set
-    // The `target` field contains a block hash
-
+  if (merkleProof.merkleRoot) {
+    merkleRoot = merkleProof.merkleRoot
+  } else if (merkleProof.blockHeader) {
+    merkleRoot = merkleProof.blockHeader.merkleroot
+  } else if (merkleProof.blockHash) {
     // You will need to get the block header corresponding
     // to this block hash in order to get the merkle root
     // from it. You can get this from from the headers
     // store of an SPV client or from a third party
     // provider like WhatsOnChain
-    merkleRoot = mapHashToHeader[merkleProof.target].merkleroot
+    merkleRoot = mapHashToHeader[merkleProof.blockHash].merkleroot
+  } else {
+    throw new Error('merkleRoot or blockHeader or blockHash fields missing')
   }
 
-  // flags bits 3 (Proof type) and 4 (Composite proof) not supported in this version
-
-  if (!txid) {
-    throw new Error('txid missing')
+  let nodes
+  if (merkleProof.merkleBranch) {
+    nodes = merkleProof.merkleBranch
+  } else if (merkleProof.merkleTree) {
+    // not supported in this version!
+    throw new Error('merkleTree not supported in this version')
+  } else {
+    throw new Error('merkleBranch or merkleTree or blockHash fields missing')
   }
 
-  if (!merkleRoot) {
-    throw new Error('merkleRoot missing')
-  }
+  // Composite proof not supported in this version
 
-  const nodes = merkleProof.nodes // different nodes used in the merkle proof
   let index = merkleProof.index // index of node in current layer (will be changed on every iteration)
   let c = txid // first calculated node is the txid of the tx to prove
   let isLastInTree = true
