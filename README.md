@@ -40,3 +40,14 @@ $ npm start
 ## Code Style
 
 The JavaScript code in this repository is written using [JavaScript Standard Style](https://standardjs.com/).
+
+## Flags
+
+| Flag | TxOrId | Target       | Proof type | Composite proof |
+|------|--------|--------------|------------|-----------------|
+| 0    | txid   | block hash   | branch     | single          |
+| 1    | txhex  | block hash   | branch     | single          |
+| 2    | txid   | block header | branch     | single          |
+| 3    | txhex  | block header | branch     | single          |
+| 4    | txid   | merkle root  | branch     | single          |
+| 5    | txhex  | merkle root  | branch     | single          |
