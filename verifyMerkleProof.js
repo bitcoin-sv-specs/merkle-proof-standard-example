@@ -66,11 +66,11 @@ function VerifyMerkleProof (merkleProof) {
     throw new Error('invalid target field')
   }
 
-  if (merkleProof.proofType !== 'branch') {
+  if (merkleProof.proofType && merkleProof.proofType !== 'branch') {
     throw new Error('only merkle branch supported in this version') // merkle tree proof type not supported
   }
 
-  if (merkleProof.composite !== false) {
+  if (merkleProof.composite === true) { // OR if (merkleProof.composite && merkleProof.composite !== false)
     throw new Error('only single proof supported in this version') // composite proof type not supported
   }
 
