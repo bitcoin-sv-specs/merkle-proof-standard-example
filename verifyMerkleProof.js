@@ -25,7 +25,7 @@ function VerifyMerkleProof (merkleProof) {
   }
 
   let merkleRoot
-  if (!merkleProof.targetType || merkleProof.targetType === 'blockHash') {
+  if (!merkleProof.targetType || merkleProof.targetType === 'hash') {
     // The `target` field contains a block hash
 
     if (merkleProof.target.length !== 64) {
@@ -42,7 +42,7 @@ function VerifyMerkleProof (merkleProof) {
       throw new Error('block hash map to header not found in `mapHashToHeader`')
     }
     merkleRoot = extractMerkleRootFromBlockHeader(header)
-  } else if (merkleProof.targetType === 'blockHeader' && merkleProof.target.length === 160) {
+  } else if (merkleProof.targetType === 'header' && merkleProof.target.length === 160) {
     // The `target` field contains a block header
     merkleRoot = extractMerkleRootFromBlockHeader(merkleProof.target)
   } else if (merkleProof.targetType === 'merkleRoot' && merkleProof.target.length === 64) {
