@@ -129,6 +129,15 @@ function getMerkleTreeParent (leftNode, rightNode) {
   return swapEndianness(Buffer.from(hash, 'hex')).toString('hex')
 }
 
+function extractMerkleRootFromBlockHeader (blockHeader) {
+  const blockHeaderBytes = Buffer.from(blockHeader, 'hex')
+
+  // extract the 32 bytes that come after the version (4 bytes)
+  // and the previous block hash (32 bytes).
+  // https://en.bitcoin.it/wiki/Block_hashing_algorithm
+  return swapEndianness(blockHeaderBytes.slice(36, 68)).toString('hex')
+}
+
 try {
   let allValid = true
 
@@ -145,13 +154,4 @@ try {
   }
 } catch (error) {
   console.error(error)
-}
-
-function extractMerkleRootFromBlockHeader (blockHeader) {
-  const blockHeaderBytes = Buffer.from(blockHeader, 'hex')
-
-  // extract the 32 bytes that come after the version (4 bytes)
-  // and the previous block hash (32 bytes).
-  // https://en.bitcoin.it/wiki/Block_hashing_algorithm
-  return swapEndianness(blockHeaderBytes.slice(36, 68)).toString('hex')
 }
