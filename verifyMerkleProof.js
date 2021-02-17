@@ -6,22 +6,7 @@ const exampleMerkleProofs = require('./proofs.json')
 // header corresponding to the block hash but you will need to retreive it from from
 // the headers store of an SPV client or from a third party provider like WhatsOnChain
 const mapHashToHeader = {
-  '76f26e3dcecb7aafcc2b32d0b910eb7b365dc74ee3d8714541e1e2fb6c0ce669': {
-    hash: '76f26e3dcecb7aafcc2b32d0b910eb7b365dc74ee3d8714541e1e2fb6c0ce669',
-    confirmations: 1,
-    height: 104,
-    version: 536870912,
-    versionHex: '20000000',
-    merkleroot: '9d4e9c273350424f50e961f9fdf8f5d3120bb3528b3f9c6678a42b22df479923',
-    num_tx: 15,
-    time: 1606136477,
-    mediantime: 1605720471,
-    nonce: 1,
-    bits: '207fffff',
-    difficulty: 4.656542373906925e-10,
-    chainwork: '00000000000000000000000000000000000000000000000000000000000000d2',
-    previousblockhash: '7a37cc07be66f19632628cae6104e07fa2014170045472b56d1f67bb4b294850'
-  }
+  '75edb0a69eb195cdd81e310553aa4d25e18450e08f168532a2c2e9cf447bf169': '000000208e33a53195acad0ab42ddbdbe3e4d9ca081332e5b01a62e340dbd8167d1a787b702f61bb913ac2063e0f2aed6d933d3386234da5c8eb9e30e498efd25fb7cb96fff12c60ffff7f2001000000'
 }
 
 function VerifyMerkleProof (merkleProof) {
@@ -40,30 +25,31 @@ function VerifyMerkleProof (merkleProof) {
   }
 
   let merkleRoot
-  if (typeof merkleProof.target === 'object') {
-    // The `target` field contains a block header
-    merkleRoot = merkleProof.target.merkleroot
-  } else if (typeof merkleProof.target === 'string') {
-    if (!merkleProof.targetType || merkleProof.targetType === 'blockHash') {
-      // The `target` field contains a block hash
+  if (!merkleProof.targetType || merkleProof.targetType === 'blockHash') {
+    // The `target` field contains a block hash
 
-      // You will need to get the block header corresponding
-      // to this block hash in order to get the merkle root
-      // from it. You can get this from from the headers
-      // store of an SPV client or from a third party
-      // provider like WhatsOnChain
-      merkleRoot = mapHashToHeader[merkleProof.target].merkleroot
-    } else if (merkleProof.targetType === 'blockHeader') {
-      // The `target` field contains a block header
-      merkleRoot = merkleProof.target.merkleroot
-    } else if (merkleProof.targetType === 'merkleRoot') {
-      // the `target` field contains a merkle root
-      merkleRoot = merkleProof.target
-    } else {
-      throw new Error('invalid targetType')
+    if (merkleProof.target.length !== 64) {
+      throw new Error('invalid target field')
     }
+
+    // You will need to get the block header corresponding
+    // to this block hash in order to get the merkle root
+    // from it. You can get this from from the headers
+    // store of an SPV client or from a third party
+    // provider like WhatsOnChain
+    const header = mapHashToHeader[merkleProof.target]
+    if (!header) {
+      throw new Error('block hash map to header not found in `mapHashToHeader`')
+    }
+    merkleRoot = extractMerkleRootFromBlockHeader(header)
+  } else if (merkleProof.targetType === 'blockHeader' && merkleProof.target.length === 160) {
+    // The `target` field contains a block header
+    merkleRoot = extractMerkleRootFromBlockHeader(merkleProof.target)
+  } else if (merkleProof.targetType === 'merkleRoot' && merkleProof.target.length === 64) {
+    // the `target` field contains a merkle root
+    merkleRoot = merkleProof.target
   } else {
-    throw new Error('invalid target field')
+    throw new Error('invalid targetType or target field')
   }
 
   if (merkleProof.proofType && merkleProof.proofType !== 'branch') {
@@ -159,4 +145,13 @@ try {
   }
 } catch (error) {
   console.error(error)
+}
+
+function extractMerkleRootFromBlockHeader (blockHeader) {
+  const blockHeaderBytes = Buffer.from(blockHeader, 'hex')
+
+  // extract the 32 bytes that come after the version (4 bytes)
+  // and the previous block hash (32 bytes).
+  // https://en.bitcoin.it/wiki/Block_hashing_algorithm
+  return swapEndianness(blockHeaderBytes.slice(36, 68)).toString('hex')
 }
