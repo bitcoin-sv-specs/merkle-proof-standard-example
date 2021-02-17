@@ -12,7 +12,6 @@
     ]
   },
   {
-    "flags": 0,
     "targetType": "blockHash",
     "proofType": "branch",
     "composite": false,
@@ -28,7 +27,6 @@
     ]
   },
   {
-    "flags": 1,
     "proofType": "branch",
     "composite": false,
     "index": 12,
@@ -43,7 +41,6 @@
     ]
   },
   {
-    "flags": 1,
     "targetType": "blockHash",
     "proofType": "branch",
     "composite": false,
@@ -59,7 +56,6 @@
     ]
   },
   {
-    "flags": 2,
     "targetType": "blockHeader",
     "index": 12,
     "txOrId": "ffeff11c25cde7c06d407490d81ef4d0db64aad6ab3d14393530701561a465ef",
@@ -73,7 +69,6 @@
     ]
   },
   {
-    "flags": 2,
     "targetType": "blockHeader",
     "proofType": "branch",
     "composite": false,
@@ -89,7 +84,6 @@
     ]
   },
   {
-    "flags": 3,
     "targetType": "blockHeader",
     "proofType": "branch",
     "composite": false,
@@ -105,7 +99,6 @@
     ]
   },
   {
-    "flags": 4,
     "targetType": "merkleRoot",
     "proofType": "branch",
     "composite": false,
