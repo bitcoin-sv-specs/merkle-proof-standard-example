@@ -73,7 +73,7 @@ function VerifyMerkleProof (merkleProof, mapHashToHeader) {
     // the last element of an uneven merkle tree layer
     if (p === '*') {
       if (!cIsLeft) { // this shouldn't happen...
-        return { isValidIndex: false, proofValid: false }
+        throw new Error('invalid duplicate on left hand side according to index value')
       }
       p = c
     }

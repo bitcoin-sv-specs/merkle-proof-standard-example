@@ -148,10 +148,10 @@ describe('verifyMerkleProof', () => {
 
     it('should accept a last element of an uneven tree if on the left', () => {
       let result = proofing.VerifyMerkleProof({
-        "index": 1,
+        "index": 2,
         "targetType": "merkleRoot",
         "txOrId": "75edb0a69eb195cdd81e310553aa4d25e18450e08f168532a2c2e9cf447bf169",
-        "target": "63032abc24619e0d1ca8e68f0c859c6094960b645b5294226f9ad9696a907ff9",
+        "target": "6c9d85bf51ebb0c474616fad91a115590e9a8316f21cab836dc949cfa267b0a7",
         "nodes": [
             "*",
             "0afecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
@@ -165,20 +165,18 @@ describe('verifyMerkleProof', () => {
     })
 
     it('should reject a last element of an uneven tree if on the right', () => {
-      let result = proofing.VerifyMerkleProof({
-        "index": 3,
-        "targetType": "merkleRoot",
-        "txOrId": "75edb0a69eb195cdd81e310553aa4d25e18450e08f168532a2c2e9cf447bf169",
-        "target": "f58e29ffdbbc6bc996f265710b08460cf1c423fdc0384233603573a78a78d5ca",
-        "nodes": [
+      assert.throws(() => {
+        proofing.VerifyMerkleProof({
+          "index": 3,
+          "targetType": "merkleRoot",
+          "txOrId": "75edb0a69eb195cdd81e310553aa4d25e18450e08f168532a2c2e9cf447bf169",
+          "target": "f58e29ffdbbc6bc996f265710b08460cf1c423fdc0384233603573a78a78d5ca",
+          "nodes": [
             "*",
             "2afecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe",
             "3afecafecafecafecafecafecafecafecafecafecafecafecafecafecafecafe"
-        ]
-      }, {})
-      assert.deepEqual(result, {
-          isLastInTree: true,
-          proofValid: false
+          ]
+        }, {})
       })
     })
 
