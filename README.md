@@ -35,7 +35,7 @@ $ npm install
 ## Run
 
 ```sh
-$ npm start
+$ npm test
 ```
 
 ## Code Style
