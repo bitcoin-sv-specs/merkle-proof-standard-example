@@ -139,7 +139,7 @@ function readVarInt(buffer, bufferIndex) {
   return [ n, bufferIndex ]
 }
 
-function packObject(merkleProof) {
+function packObject(merkleProof, forcedFlagValues) {
   let flags = 0x00
 
   let txData = Buffer.from(merkleProof.txOrId, 'hex')
@@ -168,12 +168,18 @@ function packObject(merkleProof) {
     throw new Error('invalid targetType or target field')
   }
 
-  if (merkleProof.proofType && merkleProof.proofType !== 'branch') {
+  const forceTree = forcedFlagValues !== undefined && (forcedFlagValues & 0x08) == 0x08
+  if (!forceTree && merkleProof.proofType && merkleProof.proofType !== 'branch') {
     throw new Error('only merkle branch supported in this version') // merkle tree proof type not supported
   }
 
-  if (merkleProof.composite === true) { // OR if (merkleProof.composite && merkleProof.composite !== false)
+  const forceComposite = forcedFlagValues !== undefined && (forcedFlagValues & 0x10) == 0x10
+  if (!forceComposite && merkleProof.composite === true) { // OR if (merkleProof.composite && merkleProof.composite !== false)
     throw new Error('only single proof supported in this version') // composite proof type not supported
+  }
+
+  if (forcedFlagValues !== undefined) {
+    flags = flags | forcedFlagValues
   }
 
   writer = bsv.encoding.BufferWriter()
