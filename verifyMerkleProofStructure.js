@@ -1,9 +1,8 @@
 const bsv = require('bsv')
 const { swapEndianness } = require('buffer-swap-endianness')
 
-
 function VerifyMerkleProof (data, mapHashToHeader) {
-  let buffer;
+  let buffer
   if (Buffer.isBuffer(data)) {
     buffer = data
   } else {
@@ -14,7 +13,7 @@ function VerifyMerkleProof (data, mapHashToHeader) {
   let txHash
   let txLength = 32
   let bufferIndex = 0
-  flags = buffer.readUInt8(bufferIndex)
+  const flags = buffer.readUInt8(bufferIndex)
   bufferIndex = bufferIndex + 1
 
   if ((flags & 0x08) !== 0) {
@@ -25,9 +24,10 @@ function VerifyMerkleProof (data, mapHashToHeader) {
     throw new Error('only single proof supported in this version') // composite proof type not supported
   }
 
-  ;[ index, bufferIndex ] = readVarInt(buffer, bufferIndex)
-  if ((flags & 1) != 0) {
-    ;[ txLength, bufferIndex ] = readVarInt(buffer, bufferIndex)
+  let index
+  [index, bufferIndex] = readVarInt(buffer, bufferIndex)
+  if ((flags & 1) !== 0) {
+    ;[txLength, bufferIndex] = readVarInt(buffer, bufferIndex)
   }
   if (txLength < 32) {
     throw new Error('invalid txOrId length - must be at least 32 bytes')
@@ -51,16 +51,16 @@ function VerifyMerkleProof (data, mapHashToHeader) {
   const targetBuffer = buffer.slice(bufferIndex, bufferIndex + targetLength)
   bufferIndex = bufferIndex + targetLength
 
-  let rootBuffer;
-  if (targetType == 0x04) {
+  let rootBuffer
+  if (targetType === 0x04) {
     rootBuffer = targetBuffer
-  } else if (targetType == 0x02) {
+  } else if (targetType === 0x02) {
     rootBuffer = extractMerkleRootFromBlockHeader(targetBuffer)
-  } else if (targetType == 0x00) {
+  } else if (targetType === 0x00) {
     const headerHashHex = swapEndianness(targetBuffer).toString('hex')
     const headerHex = mapHashToHeader[headerHashHex]
     if (!headerHex) {
-        throw new Error('block hash map to header not found in `mapHashToHeader`')
+      throw new Error('block hash map to header not found in `mapHashToHeader`')
     }
     const headerBuffer = Buffer.from(headerHex, 'hex')
     rootBuffer = extractMerkleRootFromBlockHeader(headerBuffer)
@@ -70,13 +70,15 @@ function VerifyMerkleProof (data, mapHashToHeader) {
   let isLastInTree = true
 
   let nodeCount
-  ;[ nodeCount, bufferIndex ] = readVarInt(buffer, bufferIndex)
+  [nodeCount, bufferIndex] = readVarInt(buffer, bufferIndex)
+
   for (let i = 0; i < nodeCount; i = i + 1) {
     const nodeType = buffer.readUInt8(bufferIndex)
     bufferIndex = bufferIndex + 1
 
     // Check if the node is the left or the right child
     const cIsLeft = index % 2 === 0
+    let p
 
     // Check for duplicate hash - this happens if the node (p) is
     // the last element of an uneven merkle tree layer
@@ -91,11 +93,11 @@ function VerifyMerkleProof (data, mapHashToHeader) {
     } else if (nodeType === 2) {
       throw new Error('what does it mean that indexes are here, I have no idea')
     } else {
-      throw new Error('invalid type '+ nodeType +' for node '+ i)
+      throw new Error('invalid type ' + nodeType + ' for node ' + i)
     }
 
     // This check fails at least once if it's not the last element
-    if (cIsLeft && (Buffer.compare(c,p) !== 0)) {
+    if (cIsLeft && (Buffer.compare(c, p) !== 0)) {
       isLastInTree = false
     }
 
@@ -121,25 +123,24 @@ function VerifyMerkleProof (data, mapHashToHeader) {
   }
 }
 
-function readVarInt(buffer, bufferIndex) {
-  n = buffer.readUInt8(bufferIndex)
+function readVarInt (buffer, bufferIndex) {
+  let n = buffer.readUInt8(bufferIndex)
   bufferIndex = bufferIndex + 1
-  if (n < 253)
-    return [ n, bufferIndex ]
-  if (n == 253) {
+  if (n < 253) { return [n, bufferIndex] }
+  if (n === 253) {
     n = buffer.readUInt16(bufferIndex)
     bufferIndex = bufferIndex + 2
-  } else if (n == 254) {
+  } else if (n === 254) {
     n = buffer.readUInt32(bufferIndex)
     bufferIndex = bufferIndex + 4
   } else {
     n = buffer.readUInt64(bufferIndex)
     bufferIndex = bufferIndex + 8
   }
-  return [ n, bufferIndex ]
+  return [n, bufferIndex]
 }
 
-function packObject(merkleProof, forcedFlagValues) {
+function packObject (merkleProof, forcedFlagValues) {
   let flags = 0x00
 
   let txData = Buffer.from(merkleProof.txOrId, 'hex')
@@ -168,12 +169,12 @@ function packObject(merkleProof, forcedFlagValues) {
     throw new Error('invalid targetType or target field')
   }
 
-  const forceTree = forcedFlagValues !== undefined && (forcedFlagValues & 0x08) == 0x08
+  const forceTree = forcedFlagValues !== undefined && (forcedFlagValues & 0x08) === 0x08
   if (!forceTree && merkleProof.proofType && merkleProof.proofType !== 'branch') {
     throw new Error('only merkle branch supported in this version') // merkle tree proof type not supported
   }
 
-  const forceComposite = forcedFlagValues !== undefined && (forcedFlagValues & 0x10) == 0x10
+  const forceComposite = forcedFlagValues !== undefined && (forcedFlagValues & 0x10) === 0x10
   if (!forceComposite && merkleProof.composite === true) { // OR if (merkleProof.composite && merkleProof.composite !== false)
     throw new Error('only single proof supported in this version') // composite proof type not supported
   }
@@ -182,10 +183,10 @@ function packObject(merkleProof, forcedFlagValues) {
     flags = flags | forcedFlagValues
   }
 
-  writer = bsv.encoding.BufferWriter()
+  const writer = bsv.encoding.BufferWriter()
   writer.writeUInt8(flags)
   writer.writeVarintNum(merkleProof.index)
-  if ((flags & 1) != 0) {
+  if ((flags & 1) !== 0) {
     writer.writeVarintNum(txData.length)
   }
   writer.write(txData)
