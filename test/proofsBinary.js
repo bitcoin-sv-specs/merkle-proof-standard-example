@@ -1,7 +1,7 @@
-const proofing = require('../verifyMerkleProofStructure')
+const proofing = require('../verifyMerkleProofBinary')
 var assert = require('assert')
 
-describe('Merkle proof data structure', () => {
+describe('verifyMerkleProof in binary format', () => {
   describe('target type independent cases', () => {
     it('should reject unrecognized flags', () => {
       // Leading byte is forced to 0xFF

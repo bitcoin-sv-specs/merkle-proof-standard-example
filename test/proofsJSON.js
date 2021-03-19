@@ -1,4 +1,4 @@
-const proofing = require('../verifyMerkleProof')
+const proofing = require('../verifyMerkleProofJSON')
 var assert = require('assert')
 
 // These tests are not intended to ensure correctness of this specific implementation. They are
@@ -11,7 +11,7 @@ var assert = require('assert')
 // style is broken if we wish to retain JSON compatibility with the data structures used
 // for testing below.
 
-describe('verifyMerkleProof', () => {
+describe('verifyMerkleProof in JSON format', () => {
   describe('target type independent cases', () => {
     it('should reject unrecognized target types', () => {
       assert.throws(() => {
