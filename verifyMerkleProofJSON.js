@@ -1,15 +1,7 @@
 const bsv = require('bsv')
 const { swapEndianness } = require('buffer-swap-endianness')
-const exampleMerkleProofs = require('./proofs.json')
 
-// For this reference implementation, we are just using a map to get the block
-// header corresponding to the block hash but you will need to retreive it from from
-// the headers store of an SPV client or from a third party provider like WhatsOnChain
-const mapHashToHeader = {
-  '75edb0a69eb195cdd81e310553aa4d25e18450e08f168532a2c2e9cf447bf169': '000000208e33a53195acad0ab42ddbdbe3e4d9ca081332e5b01a62e340dbd8167d1a787b702f61bb913ac2063e0f2aed6d933d3386234da5c8eb9e30e498efd25fb7cb96fff12c60ffff7f2001000000'
-}
-
-function VerifyMerkleProof (merkleProof) {
+function VerifyMerkleProof (merkleProof, mapHashToHeader) {
   // flags:
 
   let txid
@@ -81,7 +73,7 @@ function VerifyMerkleProof (merkleProof) {
     // the last element of an uneven merkle tree layer
     if (p === '*') {
       if (!cIsLeft) { // this shouldn't happen...
-        return { isValidIndex: false, proofValid: false }
+        throw new Error('invalid duplicate on left hand side according to index value')
       }
       p = c
     }
@@ -138,20 +130,4 @@ function extractMerkleRootFromBlockHeader (blockHeader) {
   return swapEndianness(blockHeaderBytes.slice(36, 68)).toString('hex')
 }
 
-try {
-  let allValid = true
-
-  exampleMerkleProofs.forEach((proof, i) => {
-    if (!VerifyMerkleProof(proof).proofValid) {
-      allValid = false
-      console.log(`proof #${i} failed to verify:`)
-      console.log('%j', proof)
-    }
-  })
-
-  if (allValid) {
-    console.log('All proofs provided were verified!')
-  }
-} catch (error) {
-  console.error(error)
-}
+exports.VerifyMerkleProof = VerifyMerkleProof
